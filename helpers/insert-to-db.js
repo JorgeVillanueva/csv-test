@@ -1,41 +1,21 @@
-/* const csv = require('csvtojson')
-const Appearances = require("../models/appearances")
-const Users = require("../models/users")
-
-const insertToDB = csvPath => {
-    console.time("insertarDatos")
-    csv()
-    .fromFile(csvPath)
-    .then(jsonObj => {
-        Appearances.insertMany(jsonObj)
-        .then(() => {
-            console.log("Datos insertados")
-            console.timeEnd("insertarDatos")
-        })
-        .catch(error => {
-            console.log(error)
-        })
-    })
-} */
-
+const fs = require("fs")
 const { promisify } = require("util")
 const exec = promisify(require("child_process").exec)
-const insertWithCommand = async (collectionName, csvPath) => {
+const insertWithCommand = async (collectionName, csvPath, fileIndex) => {
     try {
-        console.time("insert")
-        // Drop de la tabla
-        //const res = await exec(`mongoimport --uri "${process.env.MONGODB_CNN}" --collection ${collectionName} --drop --type csv --headerline --file ${csvPath}`)
-
-        // Upsert de la tabla -- modificar upsertFields acorde al csv
-        await exec(`mongoimport --uri "${process.env.MONGODB_CNN}" --mode upsert --upsertFields nombre,apellido --ignoreBlanks --collection ${collectionName} --type csv --headerline --file ${csvPath}`)
-        console.timeEnd("insert")
-        //console.log(res)
+        console.time(`insert file ${fileIndex}`)
+        console.log(`Uploading data from file ${fileIndex}`)
+        await exec(`mongoimport --uri "${process.env.MONGODB_CNN}" --mode upsert --upsertFields Usuario --ignoreBlanks --collection ${collectionName} --type csv --headerline --file ${csvPath}`)
+        console.timeEnd(`insert file ${fileIndex}`)
+        console.log(`File ${fileIndex} uploaded successfully.`)
+        fs.unlink(csvPath, err => {
+            if (err) throw new Error(err)
+        })
     } catch (error) {
         console.log(error)
     }
 }
 
 module.exports = {
-    //insertToDB,
     insertWithCommand
 }

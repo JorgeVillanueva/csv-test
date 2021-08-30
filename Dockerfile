@@ -1,11 +1,9 @@
-FROM node:14
-
-WORKDIR /usr/src/app
-COPY package*.json ./
-
+FROM alpine:latest
+RUN apk add nodejs npm mongodb-tools
+WORKDIR /app
+COPY . /app
+COPY package.json /app
 RUN npm install
-
-COPY . .
-
+COPY . /app
 EXPOSE 8080
-CMD [ "node", "app.js" ]
+CMD ["node", "app.js"]

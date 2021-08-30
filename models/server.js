@@ -8,13 +8,11 @@ class Server {
         this.app = express()
         this.port = process.env.PORT
         this.paths = {
-            appearances:    "/api/appearances",
-            uploads:        "/api/uploads",
-            users:          "/api/users"
+            uploads: "/api/uploads"
         }        
 
         // Conectar a base de datos
-        this.conectarDB()
+        this.connectDB()
 
         // Middlewares
         this.middlewares()
@@ -23,7 +21,7 @@ class Server {
         this.routes()
     }
 
-    async conectarDB() {
+    async connectDB() {
         await dbConnection()
     }
 
@@ -46,14 +44,12 @@ class Server {
     }
 
     routes() {
-        this.app.use(this.paths.appearances, require("../routes/appearances"))
         this.app.use(this.paths.uploads, require("../routes/uploads"))
-        this.app.use(this.paths.users, require("../routes/users"))
     }
 
     listen() {
         this.app.listen(this.port, () => {
-            console.log("Servidor corriendo en el puerto", this.port)
+            console.log(`🚀 Server running on port ${this.port}.`)
         })
     }
 }
